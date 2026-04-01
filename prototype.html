@@ -3,63 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Gold Diggers — Product Prototype & Demo">
-  <title>Gold Diggers — Prototype</title>
+  <meta name="description" content="Gold Diggers — AI Mining Feasibility Prototype. Enter drill samples to get instant economic profitability analysis.">
+  <title>Gold Diggers — Mining Feasibility Prototype</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛏️</text></svg>">
   <style>
-    .prototype-page {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .prototype-content {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 120px 24px 60px;
-    }
-    .prototype-placeholder {
-      text-align: center;
-      max-width: 600px;
-    }
-    .prototype-icon {
-      font-size: 4rem;
-      margin-bottom: 24px;
-    }
-    .prototype-title {
-      font-family: var(--font-serif);
-      font-size: 2.5rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--text-primary) 0%, var(--gold-300) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 16px;
-    }
-    .prototype-text {
-      color: var(--text-secondary);
-      font-size: 1.1rem;
-      line-height: 1.7;
-      margin-bottom: 32px;
-    }
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--gold-400);
-      font-weight: 500;
-      transition: all var(--transition-fast);
-    }
-    .back-link:hover {
-      color: var(--gold-300);
-      gap: 12px;
+    .proto-page { min-height: 100vh; display: flex; flex-direction: column; }
+    .proto-main { flex: 1; padding: 100px 24px 60px; }
+
+    /* ── Input Panel ── */
+    .proto-grid { display: grid; grid-template-columns: 380px 1fr; gap: 32px; max-width: 1200px; margin: 0 auto; }
+    .panel { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--border-radius); padding: 32px; backdrop-filter: blur(10px); }
+    .panel-title { font-family: var(--font-serif); font-size: 1.35rem; font-weight: 700; margin-bottom: 6px; background: linear-gradient(135deg, var(--text-primary) 0%, var(--gold-300) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .panel-sub { font-size: .8rem; color: var(--text-muted); margin-bottom: 24px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: .8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .08em; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .form-input, .form-select { width: 100%; padding: 10px 14px; background: rgba(10,12,18,.6); border: 1px solid var(--border-subtle); border-radius: var(--border-radius-sm); color: var(--text-primary); font-family: var(--font-sans); font-size: .9rem; transition: border-color var(--transition-fast); outline: none; }
+    .form-input:focus, .form-select:focus { border-color: var(--gold-500); }
+    .form-select option { background: var(--dark-800); }
+    .form-hint { font-size: .7rem; color: var(--text-muted); margin-top: 3px; }
+
+    .btn-add { width: 100%; margin-top: 8px; }
+    .btn-danger { background: rgba(248,113,113,.12); color: var(--accent-red); border: 1px solid rgba(248,113,113,.25); padding: 8px 16px; border-radius: var(--border-radius-sm); cursor: pointer; font-size: .8rem; font-weight: 600; transition: all var(--transition-fast); font-family: var(--font-sans); }
+    .btn-danger:hover { background: rgba(248,113,113,.22); }
+    .btn-sm { padding: 6px 14px; font-size: .78rem; border-radius: 6px; }
+
+    /* ── Sample Table ── */
+    .sample-table-wrap { max-height: 220px; overflow-y: auto; margin-top: 20px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-subtle); }
+    .sample-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    .sample-table th { position: sticky; top: 0; background: var(--dark-700); color: var(--gold-400); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; padding: 8px 10px; text-align: left; }
+    .sample-table td { padding: 7px 10px; border-top: 1px solid var(--border-subtle); color: var(--text-secondary); }
+    .sample-table tr:hover td { background: rgba(212,168,67,.04); }
+    .del-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: .85rem; opacity: .6; transition: opacity var(--transition-fast); }
+    .del-btn:hover { opacity: 1; }
+
+    /* ── Results Panel ── */
+    .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .result-card { background: rgba(10,12,18,.5); border: 1px solid var(--border-subtle); border-radius: var(--border-radius-sm); padding: 24px; }
+    .result-card.full { grid-column: 1 / -1; }
+    .rc-label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--text-muted); margin-bottom: 8px; }
+    .rc-value { font-family: var(--font-serif); font-size: 2rem; font-weight: 700; color: var(--gold-400); line-height: 1.1; }
+    .rc-value.small { font-size: 1.3rem; }
+    .rc-sub { font-size: .8rem; color: var(--text-secondary); margin-top: 6px; }
+
+    /* Profitability Gauge */
+    .gauge-wrap { position: relative; height: 28px; background: linear-gradient(90deg, #F87171 0%, #FBBF24 35%, #34D399 70%, #22C55E 100%); border-radius: 14px; margin: 16px 0 8px; overflow: visible; }
+    .gauge-marker { position: absolute; top: -6px; width: 4px; height: 40px; background: var(--text-primary); border-radius: 2px; transition: left .6s cubic-bezier(.16,1,.3,1); box-shadow: 0 0 10px rgba(255,255,255,.4); }
+    .gauge-labels { display: flex; justify-content: space-between; font-size: .68rem; color: var(--text-muted); }
+
+    /* Confidence Bar */
+    .conf-bar-bg { height: 10px; background: var(--dark-600); border-radius: 5px; overflow: hidden; margin: 10px 0 6px; }
+    .conf-bar-fill { height: 100%; background: var(--gradient-gold); border-radius: 5px; transition: width .6s cubic-bezier(.16,1,.3,1); }
+
+    /* NPV Chart (canvas) */
+    .chart-container { position: relative; width: 100%; height: 220px; }
+    .chart-container canvas { width: 100% !important; height: 100% !important; }
+
+    /* Verdict Badge */
+    .verdict { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border-radius: 50px; font-size: .85rem; font-weight: 700; margin-top: 10px; }
+    .verdict.profit { background: rgba(52,211,153,.12); color: var(--accent-emerald); border: 1px solid rgba(52,211,153,.3); }
+    .verdict.marginal { background: rgba(251,191,36,.12); color: #FBBF24; border: 1px solid rgba(251,191,36,.3); }
+    .verdict.loss { background: rgba(248,113,113,.12); color: var(--accent-red); border: 1px solid rgba(248,113,113,.3); }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; opacity: .5; }
+    .empty-state p { font-size: .95rem; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .proto-grid { grid-template-columns: 1fr; }
+      .results-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="prototype-page">
+  <div class="proto-page">
 
     <!-- Navigation -->
     <nav class="navbar scrolled">
@@ -77,21 +98,382 @@
       </div>
     </nav>
 
-    <!-- Prototype Content — TO BE FILLED BY TEAM MEMBER -->
-    <div class="prototype-content">
-      <div class="prototype-placeholder">
-        <div class="prototype-icon">🔬</div>
-        <h1 class="prototype-title">Product Prototype</h1>
-        <p class="prototype-text">
-          This page will showcase the Gold Diggers product prototype, including 
-          interactive mockups, demo videos, and interface walkthroughs.
-        </p>
-        <a href="index.html" class="back-link">
-          ← Return to main site
-        </a>
+    <!-- Main Content -->
+    <div class="proto-main">
+      <div class="container">
+        <div style="text-align:center;margin-bottom:40px;">
+          <span class="section-label">Interactive Prototype</span>
+          <h1 class="section-title">Mining Feasibility Analyzer</h1>
+          <p class="section-subtitle" style="margin:0 auto;">Enter drill-hole samples with coordinates, depth, and ore purity to receive an AI-simulated economic profitability assessment with confidence intervals.</p>
+        </div>
+
+        <div class="proto-grid">
+          <!-- LEFT: Input Panel -->
+          <div>
+            <div class="panel">
+              <h2 class="panel-title">Add Drill Sample</h2>
+              <p class="panel-sub">Provide geological data from each drill hole</p>
+
+              <div class="form-group">
+                <label class="form-label">Coordinates (meters)</label>
+                <div class="form-row">
+                  <div><input type="number" id="coordX" class="form-input" placeholder="X" step="0.1"><div class="form-hint">Easting</div></div>
+                  <div><input type="number" id="coordY" class="form-input" placeholder="Y" step="0.1"><div class="form-hint">Northing</div></div>
+                  <div><input type="number" id="coordZ" class="form-input" placeholder="Z" step="0.1"><div class="form-hint">Elevation</div></div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Drill Depth (meters)</label>
+                <input type="number" id="depth" class="form-input" placeholder="e.g. 350" min="1" max="5000" step="1">
+                <div class="form-hint">Deeper drilling → higher extraction cost</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Ore Purity / Grade (%)</label>
+                <input type="number" id="purity" class="form-input" placeholder="e.g. 4.5" min="0" max="100" step="0.01">
+                <div class="form-hint">Percentage of target mineral in raw sample</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Ore Type</label>
+                <select id="oreType" class="form-input form-select">
+                  <option value="gold">Gold (Au)</option>
+                  <option value="copper">Copper (Cu)</option>
+                  <option value="iron">Iron (Fe)</option>
+                  <option value="lithium">Lithium (Li)</option>
+                  <option value="silver">Silver (Ag)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Rock Hardness (Mohs 1-10)</label>
+                <input type="number" id="hardness" class="form-input" placeholder="e.g. 6" min="1" max="10" step="0.1" value="5">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Water Table Depth (meters)</label>
+                <input type="number" id="waterTable" class="form-input" placeholder="e.g. 120" min="0" max="5000" step="1" value="150">
+                <div class="form-hint">Shallower water table → higher pumping cost</div>
+              </div>
+
+              <button class="btn btn-primary btn-add" id="btnAdd">
+                ➕ Add Sample
+              </button>
+
+              <!-- Sample table -->
+              <div class="sample-table-wrap" id="tableWrap" style="display:none;">
+                <table class="sample-table">
+                  <thead><tr><th>#</th><th>X</th><th>Y</th><th>Z</th><th>Depth</th><th>Grade%</th><th></th></tr></thead>
+                  <tbody id="sampleBody"></tbody>
+                </table>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+                <span id="sampleCount" style="font-size:.78rem;color:var(--text-muted);"></span>
+                <button class="btn-danger btn-sm" id="btnClear" style="display:none;">Clear All</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Results Dashboard -->
+          <div>
+            <div class="panel" id="resultsPanel">
+              <h2 class="panel-title">Feasibility Results</h2>
+              <p class="panel-sub">Real-time analysis updates as you add samples</p>
+
+              <div id="emptyState" class="empty-state">
+                <div class="icon">📊</div>
+                <p>Add at least one drill sample to begin analysis</p>
+              </div>
+
+              <div id="resultsContent" style="display:none;">
+                <div class="results-grid">
+                  <!-- Profitability Score -->
+                  <div class="result-card full">
+                    <div class="rc-label">Economic Profitability Score</div>
+                    <div class="rc-value" id="profitScore">—</div>
+                    <div class="gauge-wrap">
+                      <div class="gauge-marker" id="gaugeMarker" style="left:0%"></div>
+                    </div>
+                    <div class="gauge-labels"><span>Unprofitable</span><span>Marginal</span><span>Profitable</span><span>Highly Profitable</span></div>
+                    <div id="verdictWrap"></div>
+                  </div>
+
+                  <!-- Confidence -->
+                  <div class="result-card">
+                    <div class="rc-label">Confidence Interval</div>
+                    <div class="rc-value small" id="confValue">—</div>
+                    <div class="conf-bar-bg"><div class="conf-bar-fill" id="confBar" style="width:0%"></div></div>
+                    <div class="rc-sub" id="confSub">Add more samples to increase confidence</div>
+                  </div>
+
+                  <!-- Est. NPV -->
+                  <div class="result-card">
+                    <div class="rc-label">Estimated NPV Range</div>
+                    <div class="rc-value small" id="npvValue">—</div>
+                    <div class="rc-sub" id="npvSub"></div>
+                  </div>
+
+                  <!-- Avg Grade -->
+                  <div class="result-card">
+                    <div class="rc-label">Average Ore Grade</div>
+                    <div class="rc-value small" id="avgGrade">—</div>
+                    <div class="rc-sub" id="gradeSub"></div>
+                  </div>
+
+                  <!-- Extraction Cost -->
+                  <div class="result-card">
+                    <div class="rc-label">Est. Extraction Cost</div>
+                    <div class="rc-value small" id="extractCost">—</div>
+                    <div class="rc-sub" id="costSub"></div>
+                  </div>
+
+                  <!-- Depth Factor -->
+                  <div class="result-card">
+                    <div class="rc-label">Depth Penalty Factor</div>
+                    <div class="rc-value small" id="depthFactor">—</div>
+                    <div class="rc-sub" id="depthSub"></div>
+                  </div>
+
+                  <!-- Risk -->
+                  <div class="result-card">
+                    <div class="rc-label">Risk Assessment</div>
+                    <div class="rc-value small" id="riskLevel">—</div>
+                    <div class="rc-sub" id="riskSub"></div>
+                  </div>
+
+                  <!-- Sample Distribution Chart -->
+                  <div class="result-card full">
+                    <div class="rc-label">Sample Grade Distribution</div>
+                    <div class="chart-container"><canvas id="gradeChart"></canvas></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /proto-grid -->
       </div>
     </div>
 
   </div>
+
+<script>
+/* ══════════════════════════════════════════════
+   GOLD DIGGERS PROTOTYPE — Feasibility Engine
+   ══════════════════════════════════════════════ */
+(() => {
+  const samples = [];
+
+  // Ore commodity prices ($/kg) — simplified reference
+  const PRICES = { gold: 65000, copper: 8.5, iron: 0.12, lithium: 75, silver: 850 };
+  const PRICE_LABELS = { gold: 'Gold', copper: 'Copper', iron: 'Iron', lithium: 'Lithium', silver: 'Silver' };
+
+  // DOM refs
+  const $ = id => document.getElementById(id);
+  const btnAdd = $('btnAdd'), btnClear = $('btnClear');
+  const tbody = $('sampleBody'), tableWrap = $('tableWrap');
+  const emptyState = $('emptyState'), resultsContent = $('resultsContent');
+
+  btnAdd.addEventListener('click', addSample);
+  btnClear.addEventListener('click', () => { samples.length = 0; render(); });
+
+  function addSample() {
+    const x = parseFloat($('coordX').value);
+    const y = parseFloat($('coordY').value);
+    const z = parseFloat($('coordZ').value);
+    const depth = parseFloat($('depth').value);
+    const purity = parseFloat($('purity').value);
+    const ore = $('oreType').value;
+    const hardness = parseFloat($('hardness').value) || 5;
+    const water = parseFloat($('waterTable').value) || 150;
+
+    if ([x,y,z,depth,purity].some(v => isNaN(v))) { alert('Please fill in all required fields.'); return; }
+    if (depth <= 0 || depth > 5000) { alert('Depth must be between 1 and 5000 m.'); return; }
+    if (purity < 0 || purity > 100) { alert('Purity must be between 0 and 100%.'); return; }
+
+    samples.push({ x, y, z, depth, purity, ore, hardness, water, id: Date.now() });
+    // Clear inputs except ore, hardness, water
+    ['coordX','coordY','coordZ','depth','purity'].forEach(id => $(id).value = '');
+    render();
+  }
+
+  function removeSample(id) { const i = samples.findIndex(s => s.id === id); if (i > -1) { samples.splice(i, 1); render(); } }
+
+  function render() {
+    // Table
+    if (samples.length === 0) {
+      tableWrap.style.display = 'none'; btnClear.style.display = 'none';
+      emptyState.style.display = ''; resultsContent.style.display = 'none';
+      $('sampleCount').textContent = '';
+      return;
+    }
+    tableWrap.style.display = ''; btnClear.style.display = '';
+    emptyState.style.display = 'none'; resultsContent.style.display = '';
+    $('sampleCount').textContent = `${samples.length} sample${samples.length > 1 ? 's' : ''} loaded`;
+
+    tbody.innerHTML = samples.map((s, i) =>
+      `<tr><td>${i+1}</td><td>${s.x}</td><td>${s.y}</td><td>${s.z}</td><td>${s.depth}m</td><td>${s.purity}%</td><td><button class="del-btn" onclick="window.__delSample(${s.id})">✕</button></td></tr>`
+    ).join('');
+
+    computeResults();
+  }
+  window.__delSample = removeSample;
+
+  /* ── Core Analysis Engine ── */
+  function computeResults() {
+    const n = samples.length;
+
+    // Averages
+    const avgDepth = samples.reduce((a,s) => a + s.depth, 0) / n;
+    const avgPurity = samples.reduce((a,s) => a + s.purity, 0) / n;
+    const avgHardness = samples.reduce((a,s) => a + s.hardness, 0) / n;
+    const avgWater = samples.reduce((a,s) => a + s.water, 0) / n;
+    const ore = samples[samples.length - 1].ore;
+    const price = PRICES[ore];
+
+    // ── Depth penalty: exponential cost increase ──
+    // Normalized 0-1 where 0 = shallow (good), 1 = very deep (bad)
+    const depthPenalty = Math.min(1, (avgDepth / 2000) ** 1.3);
+
+    // ── Hardness cost factor ──
+    const hardnessFactor = avgHardness / 10; // 0-1
+
+    // ── Water table penalty ──
+    const waterPenalty = avgWater < avgDepth ? Math.min(0.3, (avgDepth - avgWater) / avgDepth * 0.4) : 0;
+
+    // ── Grade bonus ──
+    // Higher purity → much more profitable
+    const gradeFactor = Math.min(1, (avgPurity / 15) ** 0.7); // Normalized, 15% is excellent
+
+    // ── Profitability Score (0-100) ──
+    let profitScore = (gradeFactor * 65) - (depthPenalty * 30) - (hardnessFactor * 10) - (waterPenalty * 15) + 25;
+    profitScore = Math.max(0, Math.min(100, profitScore));
+
+    // ── Confidence Interval ──
+    // More samples → higher confidence, but never 100%
+    // Also depends on sample variance
+    const purityStdDev = n > 1 ? Math.sqrt(samples.reduce((a,s) => a + (s.purity - avgPurity)**2, 0) / (n-1)) : avgPurity * 0.5;
+    const sampleConfidence = Math.min(95, 30 + 18 * Math.log2(n + 1));
+    const varianceReduction = Math.max(0.6, 1 - (purityStdDev / (avgPurity || 1)) * 0.3);
+    const confidence = Math.min(95, sampleConfidence * varianceReduction);
+
+    // ── NPV Estimation (simplified) ──
+    const tonnageEstimate = 50000 + (avgPurity / 100) * 500000; // tonnes
+    const revenuePerTon = (avgPurity / 100) * price * 1000;
+    const costPerTon = 25 + (avgDepth * 0.15) + (avgHardness * 3) + (waterPenalty * 50);
+    const grossNPV = (revenuePerTon - costPerTon) * tonnageEstimate / 1e6;
+    const npvLow = grossNPV * (1 - (100 - confidence) / 100 * 1.5);
+    const npvHigh = grossNPV * (1 + (100 - confidence) / 100 * 0.8);
+
+    // ── Extraction cost per ton ──
+    const extractionCost = costPerTon;
+
+    // ── Risk Level ──
+    let riskLabel, riskColor;
+    if (confidence < 45) { riskLabel = 'High Risk'; riskColor = 'var(--accent-red)'; }
+    else if (confidence < 70) { riskLabel = 'Moderate Risk'; riskColor = '#FBBF24'; }
+    else { riskLabel = 'Low Risk'; riskColor = 'var(--accent-emerald)'; }
+
+    // ── Verdict ──
+    let verdict, verdictClass;
+    if (profitScore >= 65) { verdict = '✅ Highly Profitable — Recommend Proceeding'; verdictClass = 'profit'; }
+    else if (profitScore >= 45) { verdict = '⚠️ Marginally Profitable — Further Study Needed'; verdictClass = 'marginal'; }
+    else { verdict = '❌ Unprofitable — High Risk of Negative NPV'; verdictClass = 'loss'; }
+
+    // ── Render Results ──
+    $('profitScore').textContent = profitScore.toFixed(1) + ' / 100';
+    $('gaugeMarker').style.left = `calc(${profitScore}% - 2px)`;
+    $('verdictWrap').innerHTML = `<div class="verdict ${verdictClass}">${verdict}</div>`;
+
+    $('confValue').textContent = confidence.toFixed(1) + '%';
+    $('confBar').style.width = confidence + '%';
+    $('confSub').textContent = n < 3 ? 'Add more samples to increase confidence' : n < 8 ? 'Moderate confidence — more data improves accuracy' : 'High sample density — strong confidence level';
+
+    const fmtM = v => { const abs = Math.abs(v); if (abs >= 1000) return (v<0?'-':'') + '$' + (abs/1000).toFixed(1) + 'B'; return (v<0?'-':'') + '$' + abs.toFixed(1) + 'M'; };
+    $('npvValue').textContent = `${fmtM(npvLow)} — ${fmtM(npvHigh)}`;
+    $('npvSub').textContent = `Base estimate: ${fmtM(grossNPV)} (${PRICE_LABELS[ore]})`;
+
+    $('avgGrade').textContent = avgPurity.toFixed(2) + '%';
+    $('gradeSub').textContent = `σ = ${purityStdDev.toFixed(2)}% across ${n} sample${n>1?'s':''}`;
+
+    $('extractCost').textContent = '$' + extractionCost.toFixed(0) + '/ton';
+    $('costSub').textContent = `Depth avg: ${avgDepth.toFixed(0)}m | Hardness: ${avgHardness.toFixed(1)}`;
+
+    $('depthFactor').textContent = (depthPenalty * 100).toFixed(0) + '%';
+    $('depthFactor').style.color = depthPenalty > 0.5 ? 'var(--accent-red)' : depthPenalty > 0.25 ? '#FBBF24' : 'var(--accent-emerald)';
+    $('depthSub').textContent = avgDepth < 200 ? 'Shallow — low cost impact' : avgDepth < 800 ? 'Moderate depth — manageable costs' : 'Deep extraction — significant cost burden';
+
+    $('riskLevel').textContent = riskLabel;
+    $('riskLevel').style.color = riskColor;
+    $('riskSub').textContent = `Based on ${n} sample${n>1?'s':''} with grade σ=${purityStdDev.toFixed(2)}%`;
+
+    drawChart();
+  }
+
+  /* ── Bar Chart (pure canvas) ── */
+  function drawChart() {
+    const canvas = $('gradeChart');
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    const W = rect.width, H = rect.height;
+
+    ctx.clearRect(0, 0, W, H);
+
+    const n = samples.length;
+    if (n === 0) return;
+
+    const pad = { top: 20, right: 20, bottom: 34, left: 44 };
+    const chartW = W - pad.left - pad.right;
+    const chartH = H - pad.top - pad.bottom;
+    const maxGrade = Math.max(10, ...samples.map(s => s.purity)) * 1.15;
+    const barW = Math.min(40, (chartW / n) * 0.65);
+    const gap = (chartW - barW * n) / (n + 1);
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(255,255,255,.06)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = pad.top + chartH - (chartH * i / 4);
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+      ctx.fillStyle = '#595C67'; ctx.font = '10px Inter'; ctx.textAlign = 'right';
+      ctx.fillText((maxGrade * i / 4).toFixed(1) + '%', pad.left - 6, y + 3);
+    }
+
+    // Bars
+    samples.forEach((s, i) => {
+      const x = pad.left + gap + i * (barW + gap);
+      const barH = (s.purity / maxGrade) * chartH;
+      const y = pad.top + chartH - barH;
+
+      const grad = ctx.createLinearGradient(x, y, x, y + barH);
+      if (s.purity > 5) { grad.addColorStop(0, '#FFD966'); grad.addColorStop(1, '#B8922E'); }
+      else if (s.purity > 2) { grad.addColorStop(0, '#FBBF24'); grad.addColorStop(1, '#9A7B24'); }
+      else { grad.addColorStop(0, '#F87171'); grad.addColorStop(1, '#991B1B'); }
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      const r = Math.min(4, barW / 2);
+      ctx.moveTo(x + r, y); ctx.lineTo(x + barW - r, y); ctx.quadraticCurveTo(x + barW, y, x + barW, y + r);
+      ctx.lineTo(x + barW, y + barH); ctx.lineTo(x, y + barH); ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y); ctx.fill();
+
+      // Label
+      ctx.fillStyle = '#9EA0A7'; ctx.font = '10px Inter'; ctx.textAlign = 'center';
+      ctx.fillText('#' + (i + 1), x + barW / 2, pad.top + chartH + 16);
+    });
+  }
+
+  window.addEventListener('resize', () => { if (samples.length > 0) drawChart(); });
+
+  // Allow Enter key to add sample
+  document.querySelectorAll('.form-input').forEach(inp => {
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') btnAdd.click(); });
+  });
+})();
+</script>
 </body>
 </html>
